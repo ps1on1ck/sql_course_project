@@ -73,6 +73,16 @@ CREATE TABLE friendship (
   PRIMARY KEY (user_id, friend_id) COMMENT "Составной первичный ключ"
 ) COMMENT "Таблица дружбы";
 
+-- Таблица статусов дружеских отношений
+DROP TABLE IF EXISTS friendship_statuses;
+CREATE TABLE friendship_statuses (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  name ENUM ('Requested', 'Confirmed', 'Rejected') DEFAULT 'Requested' COMMENT "Название статуса",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"  
+) COMMENT "Статусы дружбы";
+
+
 -- Добавляем внешние ключи
 ALTER TABLE friendship
   ADD CONSTRAINT friendship_user_id_fk 
@@ -84,16 +94,6 @@ ALTER TABLE friendship
   ADD CONSTRAINT friendship_status_id_fk 
     FOREIGN KEY (friendship_status_id) REFERENCES friendship_statuses(id)
       ON DELETE CASCADE;
-	  
-	  
--- Таблица статусов дружеских отношений
-DROP TABLE IF EXISTS friendship_statuses;
-CREATE TABLE friendship_statuses (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-  name ENUM ('Requested', 'Confirmed', 'Rejected') DEFAULT 'Requested' COMMENT "Название статуса",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"  
-) COMMENT "Статусы дружбы";
 
 
 -- Таблица нотификаций
@@ -115,7 +115,7 @@ ALTER TABLE notifications
 
 -- Таблица фильмов
 DROP TABLE IF EXISTS movies;
-CREATE TABLE titles (
+CREATE TABLE movies (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
   title VARCHAR(100) NOT NULL COMMENT "Название фильма",
   short_description VARCHAR(250) NOT NULL COMMENT "Короткое описание фильма",
@@ -131,8 +131,8 @@ CREATE TABLE titles (
 -- Таблица Стран
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-	country VARCHAR(200) UNIQUE NOT NULL COMMENT "Страна"
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  country VARCHAR(200) UNIQUE NOT NULL COMMENT "Страна"
 ) COMMENT "Страны";
 
 
@@ -158,8 +158,8 @@ ALTER TABLE countries_movies
 -- Таблица жанров
 DROP TABLE IF EXISTS genres;
 CREATE TABLE genres (
-	id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
-	genre VARCHAR(200) UNIQUE NOT NULL COMMENT "Жанр"
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT "Идентификатор строки",
+  genre VARCHAR(200) UNIQUE NOT NULL COMMENT "Жанр"
 ) COMMENT "Жанры";
 
 
@@ -177,7 +177,7 @@ ALTER TABLE genres_movies
   ADD CONSTRAINT genres_genre_id_fk 
     FOREIGN KEY (genre_id) REFERENCES genres(id)
 	  ON DELETE CASCADE,
-  ADD CONSTRAINT movies_movie_id_fk 
+  ADD CONSTRAINT movies_genre_id_fk 
     FOREIGN KEY (movie_id) REFERENCES movies(id)
 	  ON DELETE CASCADE;
 	  
@@ -206,10 +206,10 @@ CREATE TABLE actors_movies (
 
 -- Добавляем внешние ключи
 ALTER TABLE actors_movies
-  ADD CONSTRAINT genres_actor_id_fk 
+  ADD CONSTRAINT actors_movies_actor_id_fk 
     FOREIGN KEY (actor_id) REFERENCES actors(id)
 	  ON DELETE CASCADE,
-  ADD CONSTRAINT movies_movie_id_fk 
+  ADD CONSTRAINT actors_movies_movie_id_fk 
     FOREIGN KEY (movie_id) REFERENCES movies(id)
 	  ON DELETE CASCADE;
 	  
@@ -228,12 +228,8 @@ CREATE TABLE comments (
 
 -- Добавляем внешние ключи
 ALTER TABLE comments
-  ADD CONSTRAINT comments_movie_id_id_fk 
+  ADD CONSTRAINT comments_movie_id_to_id_fk 
     FOREIGN KEY (movie_id) REFERENCES movies(id),
-  ADD CONSTRAINT comments_from_user_id_fk 
-    FOREIGN KEY (from_user_id) REFERENCES users(id),
-  ADD CONSTRAINT comments_to_user_id_fk 
-    FOREIGN KEY (to_user_id) REFERENCES users(id);
-
-
+  ADD CONSTRAINT comments_from_user_id_to_fk 
+    FOREIGN KEY (from_user_id) REFERENCES users(id);
 
