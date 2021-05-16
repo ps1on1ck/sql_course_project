@@ -12,4 +12,4 @@ CREATE INDEX movies_title_short_desription_idx ON movies(title, short_desription
 CREATE INDEX profiles_first_name_last_name_idx ON profiles(first_name, last_name);
 
 -- Index for users
-CREATE UNIQUE INDEX users_email_uq ON users(email);
+CREATE INDEX users_email_uq ON users(email);
